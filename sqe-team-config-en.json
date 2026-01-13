@@ -1,0 +1,220 @@
+{
+  "provider": "autogen_agentchat.teams.RoundRobinGroupChat",
+  "component_type": "team",
+  "version": 1,
+  "component_version": 1,
+  "description": "Supplier Quality Analysis Platform",
+  "label": "SQE_TEAM",
+  "config": {
+    "participants": [
+      {
+        "provider": "autogen_agentchat.agents.AssistantAgent",
+        "component_type": "agent",
+        "version": 1,
+        "component_version": 1,
+        "description": "Responsible for extracting insights from data. It receives raw data, uses Python for cleaning, statistics, visualization, and summarizes conclusions in natural language to directly answer user questions",
+        "label": "Data_Analyst",
+        "config": {
+          "name": "Data_Analyst",
+          "model_client": {
+            "provider": "autogen_ext.models.openai.AzureOpenAIChatCompletionClient",
+            "component_type": "model",
+            "version": 1,
+            "component_version": 1,
+            "description": "GPT-4o Mini Azure OpenAI model client.",
+            "label": "simens-gpt",
+            "config": {
+              "model": "gpt-4o",
+              "api_key": "abbd31db76e04ba5ae9746743a0c5d6a",
+              "azure_endpoint": "https://apimgateway.siemens-healthineers.com",
+              "azure_deployment": "gpt-4o",
+              "api_version": "2025-03-01-preview"
+            }
+          },
+          "model_context": {
+            "provider": "autogen_core.model_context.UnboundedChatCompletionContext",
+            "component_type": "chat_completion_context",
+            "version": 1,
+            "component_version": 1,
+            "description": "An unbounded chat completion context that keeps a view of the all the messages.",
+            "label": "UnboundedChatCompletionContext",
+            "config": {}
+          },
+          "description": "An agent that provides assistance with ability to use tools.",
+          "system_message": "You are a data analyst. You will receive SQL query raw results and the original user question from Sql_Specialist. Your task is: 1. Summarize analysis results in clear, concise natural language to directly answer user questions.Then display the complete data obtained from the Sql_Specialist to the user. 2. Your final output should be a complete, user-facing answer, including key data and charts (if any). 3. If the answer is complete, end your message with the word TERMINATE. 4. Please note that the query results you receive must come from Sql_Specialist, please do not make up data.",
+          "model_client_stream": false,
+          "reflect_on_tool_use": false,
+          "tool_call_summary_format": "{result}",
+          "metadata": {}
+        }
+      },
+      {
+        "provider": "autogen_agentchat.agents.AssistantAgent",
+        "component_type": "agent",
+        "version": 1,
+        "component_version": 1,
+        "description": "This is the brain and central nervous system of the team. It does not directly process data or SQL, but is responsible for receiving user input, determining which expert to handle, integrating the output of various experts, and returning the final answer to the user",
+        "label": "Manager",
+        "config": {
+          "name": "Manager_agent",
+          "model_client": {
+            "provider": "autogen_ext.models.openai.AzureOpenAIChatCompletionClient",
+            "component_type": "model",
+            "version": 1,
+            "component_version": 1,
+            "description": "GPT-4o Mini Azure OpenAI model client.",
+            "label": "simens-gpt",
+            "config": {
+              "model": "gpt-4o",
+              "api_key": "abbd31db76e04ba5ae9746743a0c5d6a",
+              "azure_endpoint": "https://apimgateway.siemens-healthineers.com",
+              "azure_deployment": "gpt-4o",
+              "api_version": "2025-03-01-preview"
+            }
+          },
+          "model_context": {
+            "provider": "autogen_core.model_context.UnboundedChatCompletionContext",
+            "component_type": "chat_completion_context",
+            "version": 1,
+            "component_version": 1,
+            "description": "An unbounded chat completion context that keeps a view of the all the messages.",
+            "label": "UnboundedChatCompletionContext",
+            "config": {}
+          },
+          "description": "An agent that provides assistance with ability to use tools.",
+          "system_message": "You are a project manager responsible for coordinating a data analysis team. You have SQL specialist (Sql_Specialist) and data analyst (Data_Analyst) in your team. Your workflow is: 1. Receive questions from users. 2. Forward the question to Sql_Specialist to let him generate SQL and query data. 3. Forward the queried raw data results and user questions together to Data_Analyst to let him analyze and summarize. 4. Return the final answer from Data_Analyst to the user. Please strictly follow this process",
+          "model_client_stream": false,
+          "reflect_on_tool_use": false,
+          "tool_call_summary_format": "{result}",
+          "metadata": {}
+        }
+      },
+      {
+        "provider": "autogen_agentchat.agents.AssistantAgent",
+        "component_type": "agent",
+        "version": 1,
+        "component_version": 1,
+        "description": "Specializes in interacting with databases. Its task is to accurately understand the data requirements of user questions and convert them into legal SQL statements. It must be able to handle complex queries, aggregations, multi-table joins, etc",
+        "label": "Sql_Specialist",
+        "config": {
+          "name": "Sql_Specialist",
+          "model_client": {
+            "provider": "autogen_ext.models.openai.AzureOpenAIChatCompletionClient",
+            "component_type": "model",
+            "version": 1,
+            "component_version": 1,
+            "description": "GPT-4o Mini Azure OpenAI model client.",
+            "label": "simens-gpt",
+            "config": {
+              "model": "gpt-4o",
+              "api_key": "abbd31db76e04ba5ae9746743a0c5d6a",
+              "azure_endpoint": "https://apimgateway.siemens-healthineers.com",
+              "azure_deployment": "gpt-4o",
+              "api_version": "2025-03-01-preview"
+            }
+          },
+          "model_context": {
+            "provider": "autogen_core.model_context.UnboundedChatCompletionContext",
+            "component_type": "chat_completion_context",
+            "version": 1,
+            "component_version": 1,
+            "description": "An unbounded chat completion context that keeps a view of the all the messages.",
+            "label": "UnboundedChatCompletionContext",
+            "config": {}
+          },
+          "description": "An agent that provides assistance with ability to use tools.",
+          "system_message": "You are a professional SQL engineer. Your task is to get user questions from Manager, generate accurate and efficient SQL query statements based on user questions, and use tools to execute them. Important rules: 1. For all places that need to use connection strings, please use this connection string: \"mssql+pyodbc:///?odbc_connect=DRIVER=ODBC Driver 17 for SQL Server;SERVER=shai260a;DATABASE=CapaAtMed;Trusted_Connection=yes\" 2. First use db_connect tool to test database connection, the table name involved is only ModelCapaSsme 3. Generate accurate SQL query statements based on user questions. The current database is SQL Server. Please use statements that comply with SQL Server specifications. Only generate SELECT statements. It is strictly prohibited to execute any INSERT, UPDATE, DELETE and other write operations. It is prohibited to use LIMIT keyword. Example: a. Supplier Siemens Healthcare GmbH SHS MP KEM AP average repair time from '2025-01-01' to '2025-08-08' and count the total number of qualified records. Generated SQL: SELECT COUNT(*) AS RecordCount, AVG(CONVERT(decimal, FixTime)) AS AverageFixTime FROM [dbo].[ModelCapaSsme] WHERE CreateDate >= '2025-01-01' AND CreateDate <= '2025-08-08' AND SupplierName = 'Siemens Healthcare GmbH SHS MP KEM AP' b. Material repetition (>=3) NCM occurrence corresponds to the number of times defective material number repetition (>=3) 4. Use sql_query tool to execute queries. After the query is completed, the results are completely handed over to the data analyst (Data_Analyst), do not interpret the data yourself. If there is an error in querying data, please give the error reason to the data analyst (Data_Analyst) 5. If the query result is empty or abnormal, please analyze the reason and adjust your SQL. 6. NCM is a professional data abbreviation for non-conforming products and has no direct relationship with any field in ModelCapaSsme 7. The data source can only come from ModelCapaSsme. The explanation of the fields of this table is as follows: ColumnName ColumnType ColumnDescription R nvarchar(max) C nvarchar(max) T nvarchar(max) M nvarchar(max) P nvarchar(max) O nvarchar(max) FileCount int EntryDate nvarchar(max) DeliveryDate nvarchar(max) Time when problematic materials are returned to suppliers CloseDate nvarchar(max) After replacement or repair, problem closing time SourceId varchar(255) Problem ID, unique identifier CreateDate nvarchar(max) Problem creation time Reporter nvarchar(max) Reporter DefectivePartMaterialNumber nvarchar(max) Defective material number DefectivePartDescription nvarchar(max) Defective material description DefectivePartSerialNumber nvarchar(max) Defective material serial number ActionCodeFactor nvarchar(max) Number of defective materials RevStatusDefectPart nvarchar(max) Current version number of the material (with design changes or upgrades) Two digits 00 01 02 Supplier nvarchar(max) Supplier code SupplierName nvarchar(max) Supplier name ProblemDescription nvarchar(max) Problem description 'There are fixed templates in Chinese and English. Chinese template: Problem description: Investigation and evaluation: Evaluator: English template: Description: Evaluation: Evaluated by' ActionCode nvarchar(max) Action code '500 return to Supplier, 6 internal repair, 600 Concession concession acceptance, a little problem but acceptable 88 dispose scrap 602 Retest 501 inform Supplier' FailureClassification nvarchar(max) SQE/PE evaluation of NCM nature 'Corresponding values: Gantry Replacement Rust Function Noise Insert NULL Label Logistic Machining Dimension/Surface Issue description: Grounding screw hole not meet requirement which lead to grounding cable can't be assembled. Torque Retest Casting' AdditionalInformation nvarchar(max) Remarks Responsibility nvarchar(max) Responsible party and FailureClassification maintained together 'Pending Others SSME Customer Supplier' ErrorInSupplierEvaluationAssessed nvarchar(max) Yes is supplier responsibility, No others, qlik data determination FixTime nvarchar(max) Impact time of working hours after problem occurs (hour) Creator nvarchar(max) Creator No information SystemMaterialNumber nvarchar(max) System material number If problems are found during installation, fill in the material number of a specific machine model. If problems are found before installation, this number does not exist SystemDescription nvarchar(max) Description corresponding to the system material number SystemSerialNumber nvarchar(max) CT machine serial number ComponentMaterialNumber nvarchar(max) Parent material number ComponentDecription nvarchar(max) Parent material number description ComponentSerialNumber nvarchar(max) Parent serial number StockClean nvarchar(max) No information Source nvarchar(max) Problem source SCMIS SCARorCAPA nvarchar(max) Whether to trigger a corrective and preventive action (for materials) single month >=3, defect rate >=1%, query the consumption of a material in sap Conclusion nvarchar(max) Conclusion Not used for now",
+          "model_client_stream": false,
+          "reflect_on_tool_use": false,
+          "tool_call_summary_format": "{result}",
+          "metadata": {},
+          "tools": [
+            {
+              "provider": "autogen_core.tools.FunctionTool",
+              "component_type": "tool",
+              "version": 1,
+              "component_version": 1,
+              "description": "db_connect",
+              "label": "db_connect",
+              "config": {
+                "source_code": "def db_connect(connection_string: str) -> str:\n    \"\"\"\n    Connect to database and test connection\n    \n    Args:\n        connection_string: Database connection string\n        \n    Returns:\n        Success or failure message\n    \"\"\"\n    try:\n        engine = create_engine(connection_string)\n        # Test connection\n        with engine.connect() as conn:\n            conn.execute(text(\"SELECT 1\"))\n        return \"Database connection successful\"\n    except Exception as e:\n        return f\"Database connection failed: {str(e)}\"",
+                "name": "db_connect",
+                "description": "A simple calculator that performs basic arithmetic operations",
+                "global_imports": [
+                  {
+                    "module": "sqlalchemy",
+                    "imports": [
+                      "create_engine",
+                      "text"
+                    ]
+                  },
+                  "pandas"
+                ],
+                "has_cancellation_support": false
+              }
+            },
+            {
+              "provider": "autogen_core.tools.FunctionTool",
+              "component_type": "tool",
+              "version": 1,
+              "component_version": 1,
+              "description": "sql_query",
+              "label": "sql_query",
+              "config": {
+                "source_code": "def sql_query(connection_string: str, query: str) -> str:\n    \"\"\"\n    Execute SQL query and return results\n    \n    Args:\n        connection_string: Database connection string\n        query: SQL query statement\n        \n    Returns:\n        String representation of query results\n    \"\"\"\n    try:\n        # Safety check\n        query_upper = query.strip().upper()\n       # if not query_upper.startswith('SELECT'):\n        #    return \"Error: Only SELECT query statements are allowed\"\n            \n        dangerous_patterns = [\n            'DROP', 'DELETE', 'INSERT', 'UPDATE', 'ALTER', \n            'EXEC', 'TRUNCATE', 'MERGE', 'REPLACE'\n        ]\n        for pattern in dangerous_patterns:\n            if pattern in query_upper :\n                return f\"Error: Query contains disallowed operation: {pattern}\"\n        \n        # Execute query\n        engine = create_engine(connection_string)\n        with engine.connect() as conn:\n            df = pd.read_sql_query(text(query), conn)\n        \n        if df.empty:\n            return \"Query successful, but result is empty\"\n        else:\n            return f\"Query successful, returned {len(df)} rows of data:\\n\" + df.to_string()\n            \n    except Exception as e:\n        return f\"Error occurred during query: {str(e)}\"",
+                "name": "sql_query",
+                "description": "A simple calculator that performs basic arithmetic operations",
+                "global_imports": [
+                  {
+                    "module": "sqlalchemy",
+                    "imports": [
+                      "create_engine",
+                      "text"
+                    ]
+                  },
+                  "pandas as pd"
+                ],
+                "has_cancellation_support": false
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "termination_condition": {
+      "provider": "autogen_agentchat.base.OrTerminationCondition",
+      "component_type": "termination",
+      "version": 1,
+      "component_version": 1,
+      "label": "OrTerminationCondition",
+      "config": {
+        "conditions": [
+          {
+            "provider": "autogen_agentchat.conditions.TextMentionTermination",
+            "component_type": "termination",
+            "version": 1,
+            "component_version": 1,
+            "description": "Terminate the conversation if a specific text is mentioned.",
+            "label": "TextMentionTermination",
+            "config": {
+              "text": "TERMINATE"
+            }
+          },
+          {
+            "provider": "autogen_agentchat.conditions.MaxMessageTermination",
+            "component_type": "termination",
+            "version": 1,
+            "component_version": 1,
+            "description": "Terminate the conversation after a maximum number of messages have been exchanged.",
+            "label": "MaxMessageTermination",
+            "config": {
+              "max_messages": 20,
+              "include_agent_event": false
+            }
+          }
+        ]
+      }
+    },
+    "emit_team_events": false
+  }
+}
